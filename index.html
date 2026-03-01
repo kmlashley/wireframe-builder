@@ -45,7 +45,7 @@ header h1 span{color:var(--accent);}
 .ci-icon svg{width:100%;height:100%;}
 
 /* CANVAS */
-.cw{flex:1;overflow:auto;background:var(--bg);display:flex;flex-direction:column;align-items:center;padding:22px 28px;}
+.cw{flex:1;overflow:auto;background:var(--bg);display:flex;flex-direction:column;align-items:center;padding:22px 28px;min-height:0;}
 .cw::-webkit-scrollbar{width:7px;height:7px;}.cw::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
 .cib{width:100%;max-width:960px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
 .cib span{font-family:'Space Mono',monospace;font-size:9px;color:rgba(80,70,60,.45);letter-spacing:.08em;}
@@ -120,18 +120,21 @@ header h1 span{color:var(--accent);}
 .rh:hover{background:rgba(58,134,255,.07);}
 
 /* ─────────── COLUMN DROP ZONE ─────────── */
-.col-dz{width:100%;min-height:90px;border:2px dashed #ccc9be;background:rgba(0,0,0,.02);display:flex;align-items:center;justify-content:center;transition:all .15s;position:relative;flex-direction:column;gap:6px;}
-.col-dz.empty::before{content:'Drop a component here';font-family:'Space Mono',monospace;font-size:9px;color:#bbb5aa;letter-spacing:.08em;text-transform:uppercase;pointer-events:none;}
+.col-dz{width:100%;min-height:70px;border:2px dashed #ccc9be;background:rgba(0,0,0,.02);display:flex;flex-direction:column;gap:0;transition:border-color .15s,background .15s;position:relative;}
+.col-dz.empty{align-items:center;justify-content:center;}
+.col-dz.empty::before{content:'Drop components here';font-family:'Space Mono',monospace;font-size:9px;color:#bbb5aa;letter-spacing:.08em;text-transform:uppercase;pointer-events:none;}
 .col-dz.dz-hover{border-color:var(--blue);background:rgba(58,134,255,.06);}
-.col-dz.dz-hover::before{color:var(--blue)!important;}
+.col-dz.dz-hover.empty::before{color:var(--blue)!important;}
 .col-dz.dz-reject{border-color:#e53e3e;background:rgba(229,62,62,.05);}
-.col-dz.dz-reject::before{content:'Cannot nest this component' !important;color:#e53e3e!important;}
-.col-dz.has-content{border:none;min-height:0;display:block;padding:0;}
-/* nested component inside drop zone */
-.nested-outer{position:relative;}
-.nested-clear{position:absolute;top:5px;right:5px;width:20px;height:20px;background:#c53030;border:2px solid #fff;border-radius:50%;color:#fff;font-size:8px;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:12;padding:0;line-height:1;}
+.col-dz.dz-reject::before{content:'Cannot nest this here' !important;color:#e53e3e!important;}
+/* nested component wrapper */
+.nested-outer{position:relative;width:100%;}
+.nested-clear{position:absolute;top:4px;right:4px;width:18px;height:18px;background:#c53030;border:2px solid #fff;border-radius:50%;color:#fff;font-size:8px;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:12;padding:0;line-height:1;}
 .we.selected .nested-outer:hover .nested-clear{display:flex;}
 .nested-clear:hover{background:#9b2c2c;}
+.nested-sep{height:1px;background:#e4e0da;width:100%;}
+/* drop-into indicator when zone already has content */
+.col-dz.dz-hover:not(.empty)::after{content:'+ Drop here to add';font-family:'Space Mono',monospace;font-size:8px;color:var(--blue);letter-spacing:.06em;text-transform:uppercase;padding:4px;display:block;text-align:center;background:rgba(58,134,255,.08);border-top:1px dashed rgba(58,134,255,.4);}
 /* nested image */
 .n-img-box{width:100%;min-height:120px;background:var(--b3);border:1.5px solid #c8c2b8;position:relative;overflow:hidden;}
 .n-img-box::before,.n-img-box::after{content:'';position:absolute;background:#c8c2b8;width:141%;height:1.5px;top:50%;left:-20%;}
@@ -149,17 +152,13 @@ header h1 span{color:var(--accent);}
 .n-sh{padding:10px 14px;}
 /* nested cta */
 .n-cta{padding:20px 14px;background:#eceae4;display:flex;flex-direction:column;align-items:center;gap:10px;}
-/* nested card row */
-.n-cards{display:flex;gap:8px;padding:10px;}
-.n-card{flex:1;border:1.5px solid #c8c2b8;background:#f7f5f2;padding:10px;display:flex;flex-direction:column;gap:6px;}
-.n-card-img{width:100%;height:50px;background:var(--b3);border:1px solid #c8c2b8;position:relative;overflow:hidden;}
-.n-card-img::before,.n-card-img::after{content:'';position:absolute;background:#c8c2b8;width:141%;height:1.5px;top:50%;left:-20%;}
-.n-card-img::before{transform:rotate(-35deg);}
-.n-card-img::after{transform:rotate(35deg);}
 
 /* ─────────── COLUMN LAYOUT ─────────── */
 .wf-cols{display:flex;padding:26px 18px;gap:0;min-height:130px;}
 .col-sw{flex:1;min-width:80px;display:flex;}/* replaces .sw.bl for columns */
+/* shared resizable item wrapper for cards & testimonials */
+.csw{flex:1;min-width:80px;position:relative;display:flex;}
+.we.selected .csw:hover>.sd{display:flex;}
 .col-item{flex:1;border:1px dashed #c8c2b8;padding:13px;display:flex;flex-direction:column;gap:8px;}
 .col-h{--bh:12px;--bw:70%;--fs:13px;--fw:700;--fc:#333;}
 .col-t{--bh:8px;--bw:100%;--bc:var(--b3);--fs:11px;--fc:#666;}
@@ -209,18 +208,18 @@ header h1 span{color:var(--accent);}
 .bxo{height:40px;display:flex;align-items:center;padding:0 18px;background:transparent;border:1.5px solid #c8c2b8;}
 .bl-t{--bh:10px;--bw:55px;--fs:12px;--fc:#444;}
 /* FORM */
-.wf-form{padding:26px 34px;display:flex;flex-direction:column;gap:13px;}
+.wf-form{padding:22px 20px;display:flex;flex-direction:column;gap:13px;}
 .ff{display:flex;flex-direction:column;gap:5px;}
 .flbl{--bh:9px;--bw:70px;--bc:var(--b1);--fs:11px;--fw:700;--fc:#333;}
-.finp{width:100%;height:36px;border:1.5px solid #c8c2b8;background:#f7f5f2;display:flex;align-items:center;padding:0 10px;}
+.finp{width:100%;height:38px;border:1.5px solid #c8c2b8;background:#f7f5f2;display:flex;align-items:center;padding:0 10px;}
 .fph{--bh:8px;--bw:40%;--bc:var(--b3);--fs:11px;--fc:#999;}
-.fta{width:100%;height:80px;border:1.5px solid #c8c2b8;background:#f7f5f2;}
+.fta{width:100%;height:90px;border:1.5px solid #c8c2b8;background:#f7f5f2;}
 .fsub{height:40px;display:flex;align-items:center;padding:0 18px;background:var(--b1);border:1.5px solid #a8a39a;align-self:flex-start;margin-top:4px;}
 .fsbt{--bh:10px;--bw:58px;--fs:12px;--fc:#444;}
-.form-add{display:none;padding-top:4px;gap:6px;}
+.form-add{display:none;padding-top:4px;gap:6px;flex-wrap:wrap;}
 .we.selected .form-add{display:flex;}
 /* TESTIMONIALS */
-.wf-tests{display:flex;padding:26px 18px;gap:12px;}
+.wf-tests{display:flex;padding:26px 18px;gap:0;}
 .test-item{flex:1;border:1.5px solid #c8c2b8;background:#f7f5f2;padding:16px;display:flex;flex-direction:column;gap:8px;}
 .test-qm{width:20px;height:14px;background:var(--b1);border-radius:2px;flex-shrink:0;}
 .test-txt{display:flex;flex-direction:column;gap:6px;flex:1;}
@@ -232,7 +231,7 @@ header h1 span{color:var(--accent);}
 .tests-add{display:none;padding:4px 18px 12px;justify-content:center;}
 .we.selected .tests-add{display:flex;}
 /* CARDS */
-.wf-cards{display:flex;padding:18px;gap:12px;flex-wrap:nowrap;}
+.wf-cards{display:flex;padding:18px;gap:0;flex-wrap:nowrap;}
 .card-item{flex:1;border:1.5px solid #c8c2b8;background:#f7f5f2;padding:13px;display:flex;flex-direction:column;gap:7px;min-width:0;}
 .card-img{width:100%;height:70px;background:var(--b3);border:1px solid #c8c2b8;position:relative;overflow:hidden;flex-shrink:0;}
 .card-img::before,.card-img::after{content:'';position:absolute;background:#c8c2b8;width:141%;height:1.5px;top:50%;left:-20%;}
@@ -431,7 +430,7 @@ function TPL(type, id) {
 
     case 'cards': return `
       <div class="wf-cards" id="ca${id}">
-        ${[0,1,2].map(()=>SW(`<div class="card-item"><div class="card-img"></div>${F('wf card-h','Card Title')}${F('wf card-t','Description')}${F('wf card-t2','')}<div class="card-bbox">${F('wf card-bt','Button')}</div></div>`,true)).join('')}
+        ${[0,1,2].map((i)=>(i>0?'<div class="rh" title="Drag to resize cards"></div>':'')+`<div class="csw"><div class="card-item"><div class="card-img"></div>${F('wf card-h','Card Title')}${F('wf card-t','Description')}${F('wf card-t2','')}<div class="card-bbox">${F('wf card-bt','Button')}</div></div><button class="sd" onclick="rmSub(this)">✕</button></div>`).join('')}
       </div>
       <div class="cards-add">${AB('Add Card','addCard(this)')}</div>`;
 
@@ -460,18 +459,20 @@ function TPL(type, id) {
 
     case 'form': return `
       <div class="wf-form" id="fm${id}">
+        ${F('wf txt-h','Form Heading')}
+        ${F('wf hero-sub','Form description or instructions (optional)')}
         ${[['Full Name','t'],['Email Address','t'],['Message','ta']].map(([l,tp])=>SW(
           tp==='ta'
             ? `<div class="ff">${F('wf flbl','Field Label',l)}<div class="fta"></div></div>`
             : `<div class="ff">${F('wf flbl','Field Label',l)}<div class="finp">${F('wf fph','Placeholder...')}</div></div>`,
         true)).join('')}
         <div class="fsub">${F('wf fsbt','Submit Label','Submit')}</div>
-        <div class="form-add">${AB('Text Field','addFF(this,"t")')}${AB('Textarea','addFF(this,"ta")')}</div>
+        <div class="form-add">${AB('Text Field','addFF(this,"t")')}${AB('Textarea','addFF(this,"ta")')}${AB('Button','addFF(this,"btn")')}</div>
       </div>`;
 
     case 'testimonials': return `
       <div class="wf-tests" id="te${id}">
-        ${[0,1,2].map(()=>SW(`<div class="test-item"><div class="test-qm"></div><div class="test-txt">${[0,1,2].map(()=>F('wf test-l','Quote text...')).join('')}</div><div class="test-auth"><div class="test-av"></div><div>${F('wf test-nm','Author Name')}${F('wf test-ti','Job Title')}</div></div></div>`,true)).join('')}
+        ${[0,1,2].map((i)=>(i>0?'<div class="rh" title="Drag to resize testimonials"></div>':'')+`<div class="csw"><div class="test-item"><div class="test-qm"></div><div class="test-txt">${[0,1,2].map(()=>F('wf test-l','Quote text...')).join('')}</div><div class="test-auth"><div class="test-av"></div><div>${F('wf test-nm','Author Name')}${F('wf test-ti','Job Title')}</div></div></div><button class="sd" onclick="rmSub(this)">✕</button></div>`).join('')}
       </div>
       <div class="tests-add">${AB('Add Testimonial','addTest(this)')}</div>`;
 
@@ -593,10 +594,20 @@ function buildEl(type) {
 
   hookFields(el);
 
-  /* init resize handles and drop zones after DOM is ready */
   setTimeout(() => {
     el.querySelectorAll('.rh').forEach(rh => initResize(rh));
     el.querySelectorAll('.col-dz').forEach(dz => initDropZone(dz));
+    // also hook csw remove buttons
+    el.querySelectorAll('.csw>.sd').forEach(btn => {
+      btn.onclick = () => {
+        const csw = btn.closest('.csw');
+        const prev = csw.previousElementSibling;
+        const next = csw.nextElementSibling;
+        if (prev && prev.classList.contains('rh')) prev.remove();
+        else if (next && next.classList.contains('rh')) next.remove();
+        csw.remove();
+      };
+    });
   }, 0);
 
   return el;
@@ -651,7 +662,6 @@ function initDropZone(dz) {
   dz.addEventListener('dragenter', e => { e.preventDefault(); e.stopPropagation(); });
   dz.addEventListener('dragover', e => {
     e.stopPropagation(); e.preventDefault();
-    if (dz.classList.contains('has-content')) return;
     if (DFP && NESTABLE.has(DFP)) {
       dz.classList.add('dz-hover');
       dz.classList.remove('dz-reject');
@@ -669,17 +679,33 @@ function initDropZone(dz) {
     e.preventDefault(); e.stopPropagation();
     dz.classList.remove('dz-hover','dz-reject');
     if (!DFP || !NESTABLE.has(DFP)) return;
-    if (dz.classList.contains('has-content')) return;
     renderNested(DFP, dz);
   });
 }
 
 function renderNested(type, dz) {
+  // Remove empty state
   dz.classList.remove('empty');
-  dz.classList.add('has-content');
+  // Add a separator between items
+  const existingItems = dz.querySelectorAll('.nested-outer');
+  if (existingItems.length > 0) {
+    const sep = document.createElement('div');
+    sep.className = 'nested-sep';
+    dz.appendChild(sep);
+  }
   const outer = document.createElement('div');
   outer.className = 'nested-outer';
-  outer.innerHTML = nestedTPL(type) + `<button class="nested-clear" onclick="clearDZ(this)" title="Remove">✕</button>`;
+  outer.innerHTML = nestedTPL(type) + `<button class="nested-clear" title="Remove this block">✕</button>`;
+  outer.querySelector('.nested-clear').onclick = () => {
+    // also remove adjacent separator
+    const prev = outer.previousElementSibling;
+    const next = outer.nextElementSibling;
+    if (prev && prev.classList.contains('nested-sep')) prev.remove();
+    else if (next && next.classList.contains('nested-sep')) next.remove();
+    outer.remove();
+    // restore empty state if no items left
+    if (!dz.querySelector('.nested-outer')) dz.classList.add('empty');
+  };
   dz.appendChild(outer);
   const we = dz.closest('.we');
   if (we) hookFields(outer);
@@ -688,7 +714,6 @@ function renderNested(type, dz) {
 function clearDZ(btn) {
   const dz = btn.closest('.col-dz');
   dz.innerHTML = '';
-  dz.classList.remove('has-content');
   dz.classList.add('empty');
 }
 
@@ -731,8 +756,11 @@ function addCol(btn) {
 }
 function addCard(btn) {
   const c=btn.closest('.we').querySelector('[id^="ca"]'); if(!c) return;
-  const sw=mkSW(`<div class="card-item"><div class="card-img"></div>${F('wf card-h','Card Title')}${F('wf card-t','Description')}<div class="card-bbox">${F('wf card-bt','Button')}</div></div>`,true);
-  c.appendChild(sw); hookFields(sw);
+  const rh=document.createElement('div'); rh.className='rh'; rh.title='Drag to resize cards';
+  c.appendChild(rh); initResize(rh);
+  const csw=document.createElement('div'); csw.className='csw';
+  csw.innerHTML=`<div class="card-item"><div class="card-img"></div>${F('wf card-h','Card Title')}${F('wf card-t','Description')}<div class="card-bbox">${F('wf card-bt','Button')}</div></div><button class="sd" onclick="rmSub(this)">✕</button>`;
+  c.appendChild(csw); hookFields(csw);
 }
 function addTL(btn) {
   const c=btn.closest('.we').querySelector('[id^="tl"]'); if(!c) return;
@@ -746,16 +774,20 @@ function addBtn(btn, s) {
 }
 function addFF(btn, tp) {
   const f=btn.closest('[id^="fm"]')||btn.closest('.wf-form'); if(!f) return;
-  const inner = tp==='ta'
-    ? `<div class="ff">${F('wf flbl','Field Label','New Field')}<div class="fta"></div></div>`
-    : `<div class="ff">${F('wf flbl','Field Label','New Field')}<div class="finp">${F('wf fph','Placeholder...')}</div></div>`;
+  let inner;
+  if(tp==='ta') inner=`<div class="ff">${F('wf flbl','Field Label','New Field')}<div class="fta"></div></div>`;
+  else if(tp==='btn') inner=`<div class="fsub" style="margin-top:0">${F('wf fsbt','Button Label','Button')}</div>`;
+  else inner=`<div class="ff">${F('wf flbl','Field Label','New Field')}<div class="finp">${F('wf fph','Placeholder...')}</div></div>`;
   const sub=f.querySelector('.fsub');
   const sw=mkSW(inner,true); f.insertBefore(sw,sub); hookFields(sw);
 }
 function addTest(btn) {
   const c=btn.closest('.we').querySelector('[id^="te"]'); if(!c) return;
-  const sw=mkSW(`<div class="test-item"><div class="test-qm"></div><div class="test-txt">${F('wf test-l','Quote text...')}${F('wf test-l','')}</div><div class="test-auth"><div class="test-av"></div><div>${F('wf test-nm','Author Name')}${F('wf test-ti','Title')}</div></div></div>`,true);
-  c.appendChild(sw); hookFields(sw);
+  const rh=document.createElement('div'); rh.className='rh'; rh.title='Drag to resize testimonials';
+  c.appendChild(rh); initResize(rh);
+  const csw=document.createElement('div'); csw.className='csw';
+  csw.innerHTML=`<div class="test-item"><div class="test-qm"></div><div class="test-txt">${F('wf test-l','Quote text...')}${F('wf test-l','')}</div><div class="test-auth"><div class="test-av"></div><div>${F('wf test-nm','Author Name')}${F('wf test-ti','Title')}</div></div></div><button class="sd" onclick="rmSub(this)">✕</button>`;
+  c.appendChild(csw); hookFields(csw);
 }
 function addFL(btn) {
   const col=btn.closest('.fc-item'); if(!col) return;
@@ -871,10 +903,32 @@ function exportPNG() {
 function doExport() {
   const btn=document.querySelector('.btn-a'); btn.textContent='Exporting…'; btn.disabled=true;
   desel();
-  html2canvas(CV,{backgroundColor:'#faf9f6',scale:2,useCORS:true}).then(c=>{
-    const a=document.createElement('a'); a.download='wireframe.png'; a.href=c.toDataURL(); a.click();
-    btn.textContent='Export PNG'; btn.disabled=false;
-  });
+  // Clone the canvas so we can render it at full size without moving the real one
+  const w=CV.scrollWidth, h=CV.scrollHeight;
+  const clone=CV.cloneNode(true);
+  clone.style.cssText=`position:fixed;top:0;left:-99999px;width:${w}px;height:${h}px;overflow:visible;pointer-events:none;`;
+  document.body.appendChild(clone);
+  // Small delay to let the clone paint before capture
+  setTimeout(()=>{
+    html2canvas(clone,{
+      backgroundColor:'#faf9f6',
+      scale:2,
+      useCORS:true,
+      allowTaint:true,
+      width:w,
+      height:h,
+      scrollX:0,
+      scrollY:0
+    }).then(c=>{
+      document.body.removeChild(clone);
+      const a=document.createElement('a'); a.download='wireframe.png'; a.href=c.toDataURL('image/png'); a.click();
+      btn.textContent='Export PNG'; btn.disabled=false;
+    }).catch(()=>{
+      document.body.removeChild(clone);
+      btn.textContent='Export PNG'; btn.disabled=false;
+      alert('Export failed — try using your browser\'s screenshot tool instead (Cmd+Shift+4 on Mac, Win+Shift+S on Windows).');
+    });
+  }, 100);
 }
 
 /* ═══ KEYBOARD ═══════════════════════════════ */
