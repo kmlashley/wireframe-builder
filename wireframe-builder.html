@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UX Wireframe Builder</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#f5f2ec; --cbg:#faf9f6; --grid:rgba(180,170,155,.35);
+  --panel:#1e1d1b; --pt:#e8e4dc;
+  --accent:#e05a2b; --blue:#3a86ff;
+  --border:#ccc9be; --wb:#9b9488;
+  --b1:#c8c2b8; --b2:#d8d3cc; --b3:#e4e0da;
+  --shad:0 2px 12px rgba(0,0,0,.1); --sel:#3a86ff;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Lato',sans-serif;background:var(--bg);height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+
+/* HEADER */
+header{background:var(--panel);height:50px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;flex-shrink:0;border-bottom:2px solid var(--accent);color:var(--pt);}
+header h1{font-family:'Space Mono',monospace;font-size:13px;letter-spacing:.12em;text-transform:uppercase;}
+header h1 span{color:var(--accent);}
+.hdr-r{display:flex;gap:8px;align-items:center;}
+.btn{font-family:'Space Mono',monospace;font-size:10px;padding:6px 12px;border:none;cursor:pointer;letter-spacing:.06em;text-transform:uppercase;transition:all .15s;}
+.btn-g{background:transparent;border:1px solid rgba(255,255,255,.2);color:var(--pt);}
+.btn-g:hover{border-color:var(--accent);color:var(--accent);}
+.btn-a{background:var(--accent);color:#fff;}
+.btn-a:hover{background:#c8481f;}
+.dev-sw{display:flex;gap:3px;}
+.dev-btn{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.55);padding:4px 10px;font-family:'Space Mono',monospace;font-size:10px;cursor:pointer;transition:all .15s;}
+.dev-btn.active,.dev-btn:hover{background:var(--accent);border-color:var(--accent);color:#fff;}
+
+/* WORKSPACE */
+.ws{display:flex;flex:1;overflow:hidden;}
+
+/* SIDEBAR */
+.sb{width:210px;background:var(--panel);flex-shrink:0;overflow-y:auto;padding:12px 0 20px;border-right:1px solid rgba(255,255,255,.06);}
+.sb::-webkit-scrollbar{width:3px;}.sb::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);}
+.sg{margin-bottom:16px;padding:0 11px;}
+.sl{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid rgba(255,255,255,.06);}
+.ci{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:3px;padding:7px 10px;margin-bottom:4px;cursor:grab;display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.7);font-size:11px;transition:all .15s;user-select:none;}
+.ci:hover{background:rgba(224,90,43,.18);border-color:var(--accent);color:#fff;transform:translateX(2px);}
+.ci-icon{width:28px;height:18px;flex-shrink:0;}
+.ci-icon svg{width:100%;height:100%;}
+
+/* CANVAS */
+.cw{flex:1;overflow:auto;background:var(--bg);display:flex;flex-direction:column;align-items:center;padding:22px 28px;}
+.cw::-webkit-scrollbar{width:7px;height:7px;}.cw::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+.cib{width:100%;max-width:960px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.cib span{font-family:'Space Mono',monospace;font-size:9px;color:rgba(80,70,60,.45);letter-spacing:.08em;}
+#cv{background:var(--cbg);position:relative;min-height:600px;box-shadow:var(--shad),0 0 0 1px var(--border);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:20px 20px;transition:width .3s;}
+#cv.desktop{width:960px;}#cv.tablet{width:768px;}#cv.mobile{width:375px;}
+#cv.drag-over{outline:2px dashed var(--accent);outline-offset:-3px;}
+.eh{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;opacity:.35;}
+.eh .ei{font-size:42px;margin-bottom:10px;}
+.eh p{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.1em;color:#5a5550;text-transform:uppercase;}
+
+/* WIRE ELEMENTS */
+.we{position:relative;width:100%;border:1.5px solid var(--wb);background:var(--cbg);cursor:grab;user-select:none;transition:box-shadow .15s;}
+.we:hover{box-shadow:0 2px 10px rgba(0,0,0,.1);}
+.we.selected{outline:2px solid var(--sel);outline-offset:-1px;z-index:5;}
+.we.dragging{opacity:.4;cursor:grabbing;}
+.we.dab{border-top:3px solid var(--accent);}
+.we.dbl{border-bottom:3px solid var(--accent);}
+
+/* LABEL RIBBON */
+.slb{background:rgba(20,19,17,.9);padding:4px 11px;display:flex;align-items:center;gap:6px;min-height:23px;}
+.slt{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);opacity:.65;white-space:nowrap;flex-shrink:0;}
+.slf{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.08em;color:rgba(255,255,255,.7);outline:none;flex:1;background:transparent;text-transform:uppercase;cursor:text;}
+.slf:empty::before{content:attr(data-ph);color:rgba(255,255,255,.2);}
+.slf:focus{color:#fff;}
+
+/* ELEMENT CONTROLS */
+.ec{position:absolute;top:27px;right:5px;display:none;flex-direction:column;gap:3px;z-index:20;}
+.we.selected .ec{display:flex;}
+.ecb{width:22px;height:22px;background:var(--panel);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.7);font-size:10px;transition:background .15s;border-radius:2px;}
+.ecb:hover{background:var(--accent);color:#fff;}
+.ecb.dl:hover{background:#c53030;}
+
+/* EDITABLE FIELD */
+.wf{display:block;outline:none;border-radius:2px;transition:background .12s,box-shadow .12s;}
+.wf:empty{background:var(--bc,var(--b1));min-height:var(--bh,12px);width:var(--bw,100%);max-width:var(--bmx,none);}
+.wf:not(:empty){background:transparent!important;color:var(--fc,#2a2520);font-size:var(--fs,13px);font-weight:var(--fw,400);font-family:'Lato',sans-serif;line-height:1.35;}
+.we:not(.selected) .wf{pointer-events:none;}
+.we.selected .wf{pointer-events:auto;cursor:text;}
+.we.selected .wf:empty:hover{background:rgba(58,134,255,.14);}
+.we.selected .wf:focus{background:rgba(58,134,255,.07)!important;box-shadow:0 0 0 1.5px var(--sel);}
+.we.selected .wf:focus:empty::before{content:attr(data-ph);color:rgba(0,0,0,.28);font-size:11px;font-style:italic;font-family:'Lato',sans-serif;font-weight:400;}
+
+/* SUB WRAPPERS */
+.sw{position:relative;display:inline-flex;}
+.sw.bl{display:flex;}
+.sd{position:absolute;top:-8px;right:-8px;width:18px;height:18px;border-radius:50%;background:#c53030;border:2px solid #fff;color:#fff;font-size:8px;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:15;padding:0;transition:transform .15s;}
+.we.selected .sw:hover .sd{display:flex;}
+.sd:hover{transform:scale(1.15)!important;}
+.ab{display:none;align-items:center;gap:3px;background:rgba(58,134,255,.08);border:1px dashed rgba(58,134,255,.4);color:var(--blue);font-size:9px;font-family:'Space Mono',monospace;padding:4px 9px;cursor:pointer;border-radius:2px;letter-spacing:.04em;transition:all .15s;white-space:nowrap;}
+.we.selected .ab{display:inline-flex;}
+.ab:hover{background:rgba(58,134,255,.18);}
+
+/* PROPERTIES PANEL */
+.pp{width:192px;background:var(--panel);flex-shrink:0;border-left:1px solid rgba(255,255,255,.06);padding:13px;overflow-y:auto;color:var(--pt);}
+.pp::-webkit-scrollbar{width:3px;}.pp::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);}
+.pt{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:12px;padding-bottom:5px;border-bottom:1px solid rgba(255,255,255,.06);}
+.pe{font-size:10px;color:rgba(255,255,255,.22);font-family:'Space Mono',monospace;line-height:1.9;}
+.pn{font-size:13px;font-weight:700;color:#fff;margin-bottom:3px;}
+.pty{font-size:9px;font-family:'Space Mono',monospace;color:var(--accent);letter-spacing:.1em;margin-bottom:14px;}
+.pr{margin-bottom:11px;}
+.pl{font-size:9px;color:rgba(255,255,255,.35);margin-bottom:4px;font-family:'Space Mono',monospace;}
+.ph{font-size:10px;color:rgba(255,255,255,.2);line-height:1.7;font-family:'Space Mono',monospace;margin-top:8px;padding:7px 8px;background:rgba(255,255,255,.04);border-left:2px solid rgba(224,90,43,.4);}
+.pnta{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.75);font-size:11px;padding:7px;resize:none;min-height:68px;font-family:'Lato',sans-serif;border-radius:2px;margin-top:4px;}
+.pnta:focus{outline:none;border-color:var(--accent);}
+.pdb{margin-top:13px;width:100%;padding:7px;background:rgba(197,48,48,.1);border:1px solid rgba(197,48,48,.28);color:#fc8181;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .15s;}
+.pdb:hover{background:rgba(197,48,48,.22);}
+
+/* ─────────── RESIZE HANDLE ─────────── */
+.rh{width:10px;flex-shrink:0;cursor:col-resize;display:flex;align-items:center;justify-content:center;position:relative;z-index:3;transition:background .15s;align-self:stretch;}
+.rh::after{content:'';width:2px;height:36px;background:#c8c2b8;border-radius:2px;transition:all .15s;}
+.rh:hover::after,.rh.active::after{background:var(--blue);width:3px;height:50px;}
+.rh:hover{background:rgba(58,134,255,.07);}
+
+/* ─────────── COLUMN DROP ZONE ─────────── */
+.col-dz{width:100%;min-height:90px;border:2px dashed #ccc9be;background:rgba(0,0,0,.02);display:flex;align-items:center;justify-content:center;transition:all .15s;position:relative;flex-direction:column;gap:6px;}
+.col-dz.empty::before{content:'Drop a component here';font-family:'Space Mono',monospace;font-size:9px;color:#bbb5aa;letter-spacing:.08em;text-transform:uppercase;pointer-events:none;}
+.col-dz.dz-hover{border-color:var(--blue);background:rgba(58,134,255,.06);}
+.col-dz.dz-hover::before{color:var(--blue)!important;}
+.col-dz.dz-reject{border-color:#e53e3e;background:rgba(229,62,62,.05);}
+.col-dz.dz-reject::before{content:'Cannot nest this component' !important;color:#e53e3e!important;}
+.col-dz.has-content{border:none;min-height:0;display:block;padding:0;}
+/* nested component inside drop zone */
+.nested-outer{position:relative;}
+.nested-clear{position:absolute;top:5px;right:5px;width:20px;height:20px;background:#c53030;border:2px solid #fff;border-radius:50%;color:#fff;font-size:8px;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:12;padding:0;line-height:1;}
+.we.selected .nested-outer:hover .nested-clear{display:flex;}
+.nested-clear:hover{background:#9b2c2c;}
+/* nested image */
+.n-img-box{width:100%;min-height:120px;background:var(--b3);border:1.5px solid #c8c2b8;position:relative;overflow:hidden;}
+.n-img-box::before,.n-img-box::after{content:'';position:absolute;background:#c8c2b8;width:141%;height:1.5px;top:50%;left:-20%;}
+.n-img-box::before{transform:rotate(-20deg);}
+.n-img-box::after{transform:rotate(20deg);}
+/* nested text */
+.n-text{padding:10px;}
+/* nested buttons */
+.n-btns{padding:12px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
+/* nested form */
+.n-form{padding:10px;display:flex;flex-direction:column;gap:10px;}
+/* nested divider */
+.n-div{padding:10px 14px;display:flex;align-items:center;gap:10px;}
+/* nested section heading */
+.n-sh{padding:10px 14px;}
+/* nested cta */
+.n-cta{padding:20px 14px;background:#eceae4;display:flex;flex-direction:column;align-items:center;gap:10px;}
+/* nested card row */
+.n-cards{display:flex;gap:8px;padding:10px;}
+.n-card{flex:1;border:1.5px solid #c8c2b8;background:#f7f5f2;padding:10px;display:flex;flex-direction:column;gap:6px;}
+.n-card-img{width:100%;height:50px;background:var(--b3);border:1px solid #c8c2b8;position:relative;overflow:hidden;}
+.n-card-img::before,.n-card-img::after{content:'';position:absolute;background:#c8c2b8;width:141%;height:1.5px;top:50%;left:-20%;}
+.n-card-img::before{transform:rotate(-35deg);}
+.n-card-img::after{transform:rotate(35deg);}
+
+/* ─────────── COLUMN LAYOUT ─────────── */
+.wf-cols{display:flex;padding:26px 18px;gap:0;min-height:130px;}
+.col-sw{flex:1;min-width:80px;display:flex;}/* replaces .sw.bl for columns */
+.col-item{flex:1;border:1px dashed #c8c2b8;padding:13px;display:flex;flex-direction:column;gap:8px;}
+.col-h{--bh:12px;--bw:70%;--fs:13px;--fw:700;--fc:#333;}
+.col-t{--bh:8px;--bw:100%;--bc:var(--b3);--fs:11px;--fc:#666;}
+.col-t2{--bh:8px;--bw:85%;--bc:var(--b3);--fs:11px;--fc:#666;}
+.cols-add{display:none;padding:4px 18px 12px;justify-content:center;}
+.we.selected .cols-add{display:flex;}
+
+/* ─────────── ALL OTHER COMPONENT STYLES ─────────── */
+/* NAV */
+.wf-nav{height:52px;display:flex;align-items:center;padding:0 22px;background:#f0ede8;border-bottom:1.5px solid var(--wb);gap:16px;}
+.nav-logo{--bh:15px;--bw:75px;--fw:700;--fs:15px;--fc:#222;}
+.nav-links{display:flex;gap:2px;flex:1;align-items:center;flex-wrap:wrap;}
+.nlw{display:inline-flex;align-items:center;padding:4px 6px;}
+.nav-link{--bh:10px;--bw:44px;--fs:12px;--fc:#555;}
+.nav-cta-box{height:30px;display:flex;align-items:center;padding:0 12px;border:1.5px solid var(--b1);background:var(--b3);}
+.nav-cta{--bh:9px;--bw:50px;--fs:11px;--fc:#444;}
+/* HERO */
+.wf-hero{padding:52px 48px;background:repeating-linear-gradient(-45deg,#f0ede8 0,#f0ede8 4px,#faf9f6 4px,#faf9f6 20px);display:flex;flex-direction:column;align-items:center;gap:13px;min-height:250px;justify-content:center;}
+.hero-h{--bh:24px;--bw:62%;--bc:var(--b1);--fs:26px;--fw:700;--fc:#1a1a1a;text-align:center;}
+.hero-sub{--bh:14px;--bw:48%;--bc:var(--b2);--fs:15px;--fc:#555;text-align:center;}
+.hero-body{--bh:10px;--bw:40%;--bc:var(--b3);--fs:13px;--fc:#777;text-align:center;}
+.hero-btns{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;justify-content:center;align-items:center;}
+.hbb{height:40px;display:flex;align-items:center;padding:0 18px;border:1.5px solid var(--b1);background:var(--b1);}
+.hbb.ol{background:transparent;}
+.hbt{--bh:10px;--bw:55px;--fs:12px;--fc:#444;}
+/* SECTION HEADING */
+.wf-sh{padding:22px 36px 14px;}
+.sh-main{--bh:20px;--bw:50%;--fs:22px;--fw:700;--fc:#1a1a1a;}
+.sh-sub{--bh:11px;--bw:38%;--bc:var(--b2);--fs:13px;--fc:#777;margin-top:8px;}
+.sh-line{height:3px;background:var(--b1);width:42px;margin-top:12px;}
+/* CTA */
+.wf-cta{padding:50px 48px;background:#eceae4;display:flex;flex-direction:column;align-items:center;gap:12px;}
+.cta-h{--bh:20px;--bw:52%;--bc:var(--b1);--fs:22px;--fw:700;--fc:#1a1a1a;text-align:center;}
+.cta-sub{--bh:12px;--bw:40%;--bc:var(--b2);--fs:13px;--fc:#666;text-align:center;}
+.cta-bbox{height:42px;display:flex;align-items:center;padding:0 22px;background:var(--b1);border:1.5px solid #a8a39a;margin-top:8px;}
+.cta-bt{--bh:10px;--bw:58px;--fs:12px;--fc:#444;}
+/* IMAGE */
+.wf-image{padding:20px;}
+.img-box{width:100%;height:220px;background:var(--b3);border:1.5px solid #c8c2b8;position:relative;overflow:hidden;}
+.img-box::before,.img-box::after{content:'';position:absolute;background:#c8c2b8;width:141%;height:1.5px;top:50%;left:-20%;}
+.img-box::before{transform:rotate(-12deg);}
+.img-box::after{transform:rotate(12deg);}
+.img-cap{--bh:10px;--bw:55%;--bc:var(--b2);--fs:11px;--fc:#777;margin:9px auto 0;display:block;text-align:center;}
+/* BUTTONS */
+.wf-btns{padding:18px 30px;display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;}
+.bxs{height:40px;display:flex;align-items:center;padding:0 18px;background:var(--b1);border:1.5px solid #a8a39a;}
+.bxo{height:40px;display:flex;align-items:center;padding:0 18px;background:transparent;border:1.5px solid #c8c2b8;}
+.bl-t{--bh:10px;--bw:55px;--fs:12px;--fc:#444;}
+/* FORM */
+.wf-form{padding:26px 34px;display:flex;flex-direction:column;gap:13px;}
+.ff{display:flex;flex-direction:column;gap:5px;}
+.flbl{--bh:9px;--bw:70px;--bc:var(--b1);--fs:11px;--fw:700;--fc:#333;}
+.finp{width:100%;height:36px;border:1.5px solid #c8c2b8;background:#f7f5f2;display:flex;align-items:center;padding:0 10px;}
+.fph{--bh:8px;--bw:40%;--bc:var(--b3);--fs:11px;--fc:#999;}
+.fta{width:100%;height:80px;border:1.5px solid #c8c2b8;background:#f7f5f2;}
+.fsub{height:40px;display:flex;align-items:center;padding:0 18px;background:var(--b1);border:1.5px solid #a8a39a;align-self:flex-start;margin-top:4px;}
+.fsbt{--bh:10px;--bw:58px;--fs:12px;--fc:#444;}
+.form-add{display:none;padding-top:4px;gap:6px;}
+.we.selected .form-add{display:flex;}
+/* TESTIMONIALS */
+.wf-tests{display:flex;padding:26px 18px;gap:12px;}
+.test-item{flex:1;border:1.5px solid #c8c2b8;background:#f7f5f2;padding:16px;display:flex;flex-direction:column;gap:8px;}
+.test-qm{width:20px;height:14px;background:var(--b1);border-radius:2px;flex-shrink:0;}
+.test-txt{display:flex;flex-direction:column;gap:6px;flex:1;}
+.test-l{--bh:8px;--bc:var(--b3);--fs:11px;--fc:#555;}
+.test-auth{display:flex;align-items:center;gap:9px;margin-top:4px;}
+.test-av{width:28px;height:28px;background:var(--b2);border-radius:50%;flex-shrink:0;}
+.test-nm{--bh:9px;--bw:68px;--fs:11px;--fw:700;--fc:#444;}
+.test-ti{--bh:8px;--bw:50px;--bc:var(--b3);--fs:10px;--fc:#888;margin-top:3px;}
+.tests-add{display:none;padding:4px 18px 12px;justify-content:center;}
+.we.selected .tests-add{display:flex;}
+/* CARDS */
+.wf-cards{display:flex;padding:18px;gap:12px;flex-wrap:nowrap;}
+.card-item{flex:1;border:1.5px solid #c8c2b8;background:#f7f5f2;padding:13px;display:flex;flex-direction:column;gap:7px;min-width:0;}
+.card-img{width:100%;height:70px;background:var(--b3);border:1px solid #c8c2b8;position:relative;overflow:hidden;flex-shrink:0;}
+.card-img::before,.card-img::after{content:'';position:absolute;background:#c8c2b8;width:141%;height:1.5px;top:50%;left:-20%;}
+.card-img::before{transform:rotate(-35deg);}
+.card-img::after{transform:rotate(35deg);}
+.card-h{--bh:11px;--bw:80%;--fs:12px;--fw:700;--fc:#333;}
+.card-t{--bh:8px;--bw:100%;--bc:var(--b3);--fs:11px;--fc:#666;}
+.card-t2{--bh:8px;--bw:85%;--bc:var(--b3);--fs:11px;--fc:#666;}
+.card-bbox{height:28px;display:flex;align-items:center;padding:0 10px;background:var(--b3);border:1.5px solid #c8c2b8;align-self:flex-start;margin-top:2px;}
+.card-bt{--bh:8px;--bw:42px;--fs:10px;--fc:#555;}
+.cards-add{display:none;padding:4px 18px 12px;justify-content:center;}
+.we.selected .cards-add{display:flex;}
+/* TEXT */
+.wf-text{padding:26px 34px;display:flex;flex-direction:column;gap:9px;}
+.txt-h{--bh:18px;--bw:55%;--fs:20px;--fw:700;--fc:#1a1a1a;}
+.txt-l{--bh:9px;--bc:var(--b3);--fs:13px;--fc:#555;}
+.txt-add{display:none;padding-top:4px;}
+.we.selected .txt-add{display:flex;}
+/* DIVIDER */
+.wf-div{padding:14px 22px;display:flex;align-items:center;gap:12px;}
+.div-l{flex:1;height:1.5px;background:#c8c2b8;}
+.div-d{width:8px;height:8px;border-radius:50%;background:#c8c2b8;}
+.div-t{--bh:10px;--bw:100px;--bc:var(--b2);--fs:11px;--fc:#888;text-align:center;min-width:70px;}
+/* FOOTER */
+.wf-footer{background:#2a2825;padding:34px 34px 18px;display:flex;flex-direction:column;gap:18px;}
+.ft-top{display:flex;gap:28px;flex-wrap:wrap;}
+.fc-item{flex:1;min-width:80px;display:flex;flex-direction:column;gap:6px;}
+.fc-h{--bh:10px;--bw:65px;--bc:rgba(255,255,255,.28);--fs:11px;--fw:700;--fc:rgba(255,255,255,.8);}
+.fc-lnk{--bh:8px;--bw:78%;--bc:rgba(255,255,255,.12);--fs:11px;--fc:rgba(255,255,255,.5);}
+.ft-bot{border-top:1px solid rgba(255,255,255,.1);padding-top:13px;display:flex;gap:10px;}
+.ft-cp{--bh:8px;--bw:155px;--bc:rgba(255,255,255,.1);--fs:10px;--fc:rgba(255,255,255,.35);flex:1;}
+.ft-pl{--bh:8px;--bw:68px;--bc:rgba(255,255,255,.08);--fs:10px;--fc:rgba(255,255,255,.3);}
+.fcols-add{display:none;padding:6px 0 4px;}
+.we.selected .fcols-add{display:flex;}
+/* drag ghost */
+.dgh{position:fixed;pointer-events:none;opacity:.75;z-index:9999;background:#fff;border:2px dashed var(--accent);padding:6px 13px;font-family:'Space Mono',monospace;font-size:10px;color:var(--accent);border-radius:3px;transform:translate(-50%,-50%);white-space:nowrap;display:none;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>UX <span>Wireframe</span> Builder</h1>
+  <div class="hdr-r">
+    <div class="dev-sw">
+      <button class="dev-btn active" data-dev="desktop" onclick="switchDev(this)">Desktop</button>
+      <button class="dev-btn" data-dev="tablet" onclick="switchDev(this)">Tablet</button>
+      <button class="dev-btn" data-dev="mobile" onclick="switchDev(this)">Mobile</button>
+    </div>
+    <button class="btn btn-g" onclick="clearAll()">Clear</button>
+    <button class="btn btn-a" onclick="exportPNG()">Export PNG</button>
+  </div>
+</header>
+
+<div class="ws">
+
+<!-- SIDEBAR -->
+<div class="sb">
+  <div class="sg">
+    <div class="sl">Navigation</div>
+    <div class="ci" draggable="true" data-type="navbar"><div class="ci-icon"><svg viewBox="0 0 28 18" fill="none"><rect x=".5" y=".5" width="27" height="17" stroke="#e05a2b" stroke-width="1.2" rx="1"/><rect x="3" y="6" width="7" height="3" fill="#e05a2b" opacity=".4" rx="1"/><rect x="14" y="7" width="4" height="2" fill="#e05a2b" opacity=".3" rx="1"/><rect x="20" y="7" width="4" height="2" fill="#e05a2b" opacity=".3" rx="1"/></svg></div>Navigation Bar</div>
+  </div>
+  <div class="sg">
+    <div class="sl">Sections</div>
+    <div class="ci" draggable="true" data-type="hero"><div class="ci-icon"><svg viewBox="0 0 28 18" fill="none"><rect x=".5" y=".5" width="27" height="17" stroke="#e05a2b" stroke-width="1.2" rx="1"/><rect x="7" y="4" width="14" height="3" fill="#e05a2b" opacity=".4" rx="1"/><rect x="9" y="9" width="10" height="2" fill="#e05a2b" opacity=".25" rx="1"/><rect x="9" y="13" width="10" height="2" fill="#e05a2b" opacity=".25" rx="1"/></svg></div>Hero Section</div>
+    <div class="ci" draggable="true" data-type="section-heading"><div class="ci-icon"><svg viewBox="0 0 28 18" fill="none"><rect x="2" y="3" width="14" height="4" fill="#e05a2b" opacity=".4" rx="1"/><rect x="2" y="10" width="20" height="2" fill="#e05a2b" opacity=".2" rx="1"/><rect x="2" y="14" width="8" height="2" fill="#e05a2b" opacity=".45" rx="1"/></svg></div>Section Heading</div>
+    <div class="ci" draggable="true" data-type="cta"><div class="ci-icon"><svg viewBox="0 0 28 18" fill="none"><rect x=".5" y=".5" width="27" height="17" stroke="#e05a2b" stroke-width="1.2" rx="1"/><rect x="8" y="7" width="12" height="5" fill="#e05a2b" opacity=".4" rx="1"/></svg></div>Call to Action</div>
+    <div class="ci" draggable="true" data-type="divider"><div class="ci-icon"><svg viewBox="0 0 28 18" fill="none"><line x1="1" y1="9" x2="11" y2="9" stroke="#e05a2b" stroke-width="1.5"/><circle cx="14" cy="9" r="2" fill="#e05a2b" opacity=".5"/><line x1="17" y1="9" x2="27" y2="9" stroke="#e05a2b" stroke-width="1.5"/></svg></div>Divider</div>
+  </div>
+  <div class="sg">
+    <div class="sl">Layout</div>
+    <div class="ci" draggable="true" data-type="two-col"><div class="ci-icon"><svg viewBox="0 0 28 18" fill="none"><rect x=".5" y=".5" width="12" height="17" stroke="#e05a2b" stroke-width="1.2" rx="1"/><rect x="15.5" y=".5" width="12" height="17" stroke="#e05a2b" stroke-width="1.2" rx="1"/></svg></div>2 Columns</div>
+    <div class="ci" draggable="true" data-type="three-col"><div class="ci-icon"><svg viewBox="0 0 28 18" fill="none"><rect x=".5" y=".5" width="7" height="17" stroke="#e05a2b" stroke-width="1.2" rx="1"/><rect x="10.5" y=".5" width="7" height="17" stroke="#e05a2b" stroke-width="1.2" rx="1"/><rect x="20.5" y=".5" width="7" height="17" stroke="#e05a2b" stroke-width="1.2" rx="1"/></svg></div>3 Columns</div>
+    <div class="ci" draggable="true" data-type="cards"><div class="ci-icon"><svg viewBox="0 0 28 18" fill="none"><rect x=".5" y="2.5" width="12" height="13" stroke="#e05a2b" stroke-width="1.2" rx="1"/><rect x="15.5" y="2.5" width="12" height="13" stroke="#e05a2b" stroke-width="1.2" rx="1"/></svg></div>Card Row</div>
+  </div>
+  <div class="sg">
+    <div class="sl">Content</div>
+    <div class="ci" draggable="true" data-type="text"><div class="ci-icon"><svg viewBox="0 0 28 18" fill="none"><rect x="1" y="2" width="15" height="3" fill="#e05a2b" opacity=".5" rx="1"/><rect x="1" y="7" width="26" height="2" fill="#e05a2b" opacity=".25" rx="1"/><rect x="1" y="11" width="22" height="2" fill="#e05a2b" opacity=".25" rx="1"/><rect x="1" y="15" width="16" height="2" fill="#e05a2b" opacity=".25" rx="1"/></svg></div>Text Block</div>
+    <div class="ci" draggable="true" data-type="image"><div class="ci-icon"><svg viewBox="0 0 28 18" fill="none"><rect x=".5" y=".5" width="27" height="17" stroke="#e05a2b" stroke-width="1.2" rx="1"/><line x1=".5" y1=".5" x2="27.5" y2="17.5" stroke="#e05a2b" stroke-width="1" opacity=".35"/><line x1="27.5" y1=".5" x2=".5" y2="17.5" stroke="#e05a2b" stroke-width="1" opacity=".35"/></svg></div>Image Placeholder</div>
+    <div class="ci" draggable="true" data-type="testimonials"><div class="ci-icon"><svg viewBox="0 0 28 18" fill="none"><rect x=".5" y="2.5" width="12" height="13" stroke="#e05a2b" stroke-width="1.2" rx="1"/><rect x="15.5" y="2.5" width="12" height="13" stroke="#e05a2b" stroke-width="1.2" rx="1"/><rect x="2" y="4" width="4" height="3" fill="#e05a2b" opacity=".4" rx="1"/><rect x="17" y="4" width="4" height="3" fill="#e05a2b" opacity=".4" rx="1"/></svg></div>Testimonials</div>
+  </div>
+  <div class="sg">
+    <div class="sl">Interactive</div>
+    <div class="ci" draggable="true" data-type="buttons"><div class="ci-icon"><svg viewBox="0 0 28 18" fill="none"><rect x=".5" y="5.5" width="12" height="7" fill="#e05a2b" opacity=".4" rx="1"/><rect x="15.5" y="5.5" width="12" height="7" stroke="#e05a2b" stroke-width="1.2" rx="1"/></svg></div>Button Group</div>
+    <div class="ci" draggable="true" data-type="form"><div class="ci-icon"><svg viewBox="0 0 28 18" fill="none"><rect x=".5" y=".5" width="27" height="4" stroke="#e05a2b" stroke-width="1" rx="1" opacity=".4"/><rect x=".5" y="7" width="27" height="4" stroke="#e05a2b" stroke-width="1" rx="1" opacity=".4"/><rect x=".5" y="13" width="11" height="5" fill="#e05a2b" opacity=".4" rx="1"/></svg></div>Form</div>
+  </div>
+  <div class="sg">
+    <div class="sl">Footer</div>
+    <div class="ci" draggable="true" data-type="footer"><div class="ci-icon"><svg viewBox="0 0 28 18" fill="none"><rect x=".5" y=".5" width="27" height="17" fill="#2a2825" rx="1"/><rect x="2" y="4" width="6" height="2" fill="rgba(255,255,255,.3)" rx="1"/><rect x="11" y="4" width="6" height="2" fill="rgba(255,255,255,.3)" rx="1"/><rect x="20" y="4" width="6" height="2" fill="rgba(255,255,255,.3)" rx="1"/><line x1=".5" y1="13" x2="27.5" y2="13" stroke="rgba(255,255,255,.15)" stroke-width="1"/></svg></div>Footer</div>
+  </div>
+</div>
+
+<!-- CANVAS -->
+<div class="cw" id="cw">
+  <div class="cib">
+    <span id="ciL">Desktop — 960px</span>
+    <span id="ciR">0 elements · Drop components into column zones to nest them</span>
+  </div>
+  <div id="cv" class="desktop">
+    <div class="eh" id="eh">
+      <div class="ei">⊡</div>
+      <p>Drag components from the left panel</p>
+      <p style="margin-top:5px;opacity:.6">to start building your wireframe</p>
+    </div>
+  </div>
+</div>
+
+<!-- PROPERTIES -->
+<div class="pp">
+  <div class="pt">Properties</div>
+  <div class="pe" id="pe">Select an element<br>to view options.</div>
+  <div id="pc" style="display:none"></div>
+</div>
+
+</div>
+
+<div class="dgh" id="dgh"></div>
+
+<script>
+/* ═══ STATE ══════════════════════════════════ */
+let EC=0, SEL=null, DFP=null, DFC=null, NOTES={};
+
+/* Component types that can be nested inside column drop zones */
+const NESTABLE = new Set(['image','text','buttons','form','divider','section-heading','cta']);
+
+const META = {
+  navbar:           {n:'Navigation Bar',    t:'Click any bar to type. Hover sub-items to ✕ remove them.'},
+  hero:             {n:'Hero Section',      t:'Click headline/button bars to type. Add or remove buttons.'},
+  'section-heading':{n:'Section Heading',   t:'Click bars to add heading and supporting text.'},
+  cta:              {n:'Call to Action',    t:'Click heading and button bars to type your CTA copy.'},
+  divider:          {n:'Divider',           t:'Click the center bar to add a section label.'},
+  'two-col':        {n:'2-Column Layout',   t:'Drag the ▐ handle between columns to resize. Drop any content component into a column zone.'},
+  'three-col':      {n:'3-Column Layout',   t:'Drag the ▐ handle between columns to resize. Drop any content component into a column zone.'},
+  cards:            {n:'Card Row',          t:'Click card title bars to type. Add or remove cards.'},
+  text:             {n:'Text Block',        t:'Click heading or body lines to type. Add or remove lines.'},
+  image:            {n:'Image Placeholder', t:'Click the caption bar to describe this image.'},
+  buttons:          {n:'Button Group',      t:'Click button bars to label them. Add filled or outline buttons.'},
+  form:             {n:'Form',              t:'Click field labels to rename them. Add text fields or textareas.'},
+  testimonials:     {n:'Testimonials',      t:'Click bars to type quote and author info. Add or remove testimonials.'},
+  footer:           {n:'Footer',            t:'Click column heading and link bars. Add columns or links.'},
+};
+
+/* ═══ FIELD / SW / AB helpers ══════════════ */
+const F  = (cls,ph,v='') => `<div class="wf ${cls}" contenteditable="true" spellcheck="false" data-ph="${ph}">${v}</div>`;
+const SW = (inner,bl=false) => `<div class="sw${bl?' bl':''}">${inner}<button class="sd" onclick="rmSub(this)">✕</button></div>`;
+const AB = (lbl,fn) => `<button class="ab" onclick="${fn}">+ ${lbl}</button>`;
+
+/* ═══ TEMPLATES ══════════════════════════════ */
+function TPL(type, id) {
+  switch(type) {
+    case 'navbar': return `
+      <div class="wf-nav">
+        ${F('wf nav-logo','Brand / Logo Name')}
+        <div class="nav-links" id="nl${id}">
+          ${['Home','About','Features','Pricing'].map(t=>SW(`<div class="nlw">${F('wf nav-link','Nav Link',t)}</div>`)).join('')}
+          ${AB('Add Link','addNL(this)')}
+        </div>
+        ${SW(`<div class="nav-cta-box">${F('wf nav-cta','CTA Text','Sign Up')}</div>`)}
+      </div>`;
+
+    case 'hero': return `
+      <div class="wf-hero">
+        ${F('wf hero-h','Main Headline')}
+        ${F('wf hero-sub','A clear subheadline that supports the main message')}
+        ${F('wf hero-body','Additional supporting copy or value proposition')}
+        <div class="hero-btns" id="hb${id}">
+          ${SW(`<div class="hbb">${F('wf hbt','Button Text','Get Started')}</div>`)}
+          ${SW(`<div class="hbb ol">${F('wf hbt','Button Text','Learn More')}</div>`)}
+          ${AB('Add Button','addHB(this,"s")')}
+          ${AB('Add Outline','addHB(this,"o")')}
+        </div>
+      </div>`;
+
+    case 'section-heading': return `
+      <div class="wf-sh">
+        ${F('wf sh-main','Section Heading')}
+        ${F('wf sh-sub','Optional subheading or description text')}
+        <div class="sh-line"></div>
+      </div>`;
+
+    case 'cta': return `
+      <div class="wf-cta">
+        ${F('wf cta-h','Call to Action Headline')}
+        ${F('wf cta-sub','Supporting copy that explains the value')}
+        <div class="cta-bbox">${F('wf cta-bt','Button Text','Get Started')}</div>
+      </div>`;
+
+    case 'divider': return `
+      <div class="wf-div">
+        <div class="div-l"></div>
+        ${F('wf div-t','Section Label')}
+        <div class="div-l"></div>
+      </div>`;
+
+    case 'two-col': return colsTPL(id, 2);
+    case 'three-col': return colsTPL(id, 3);
+
+    case 'cards': return `
+      <div class="wf-cards" id="ca${id}">
+        ${[0,1,2].map(()=>SW(`<div class="card-item"><div class="card-img"></div>${F('wf card-h','Card Title')}${F('wf card-t','Description')}${F('wf card-t2','')}<div class="card-bbox">${F('wf card-bt','Button')}</div></div>`,true)).join('')}
+      </div>
+      <div class="cards-add">${AB('Add Card','addCard(this)')}</div>`;
+
+    case 'text': return `
+      <div class="wf-text">
+        ${F('wf txt-h','Section Heading')}
+        <div id="tl${id}">
+          ${[0,1,2,3,4].map(()=>SW(F('wf txt-l','Body text paragraph...'),true)).join('')}
+        </div>
+        <div class="txt-add">${AB('Add Line','addTL(this)')}</div>
+      </div>`;
+
+    case 'image': return `
+      <div class="wf-image">
+        <div class="img-box"></div>
+        ${F('wf img-cap','Caption or image description')}
+      </div>`;
+
+    case 'buttons': return `
+      <div class="wf-btns" id="bt${id}">
+        ${SW(`<div class="bxs">${F('wf bl-t','Button Label','Primary Action')}</div>`)}
+        ${SW(`<div class="bxo">${F('wf bl-t','Button Label','Secondary Action')}</div>`)}
+        ${AB('Add Button','addBtn(this,"s")')}
+        ${AB('Add Outline','addBtn(this,"o")')}
+      </div>`;
+
+    case 'form': return `
+      <div class="wf-form" id="fm${id}">
+        ${[['Full Name','t'],['Email Address','t'],['Message','ta']].map(([l,tp])=>SW(
+          tp==='ta'
+            ? `<div class="ff">${F('wf flbl','Field Label',l)}<div class="fta"></div></div>`
+            : `<div class="ff">${F('wf flbl','Field Label',l)}<div class="finp">${F('wf fph','Placeholder...')}</div></div>`,
+        true)).join('')}
+        <div class="fsub">${F('wf fsbt','Submit Label','Submit')}</div>
+        <div class="form-add">${AB('Text Field','addFF(this,"t")')}${AB('Textarea','addFF(this,"ta")')}</div>
+      </div>`;
+
+    case 'testimonials': return `
+      <div class="wf-tests" id="te${id}">
+        ${[0,1,2].map(()=>SW(`<div class="test-item"><div class="test-qm"></div><div class="test-txt">${[0,1,2].map(()=>F('wf test-l','Quote text...')).join('')}</div><div class="test-auth"><div class="test-av"></div><div>${F('wf test-nm','Author Name')}${F('wf test-ti','Job Title')}</div></div></div>`,true)).join('')}
+      </div>
+      <div class="tests-add">${AB('Add Testimonial','addTest(this)')}</div>`;
+
+    case 'footer': return `
+      <div class="wf-footer">
+        <div class="ft-top" id="ft${id}">
+          ${[['Company',['Home','About','Careers']],['Product',['Features','Pricing','Docs']],['Legal',['Privacy','Terms']],['Contact',['Twitter','LinkedIn']]].map(([h,ls])=>SW(`
+            <div class="fc-item">
+              ${F('wf fc-h','Column Heading',h)}
+              ${ls.map(l=>SW(F('wf fc-lnk','Link',l),true)).join('')}
+              ${AB('Add Link','addFL(this)')}
+            </div>`,true)).join('')}
+          ${AB('Add Column','addFC(this)')}
+        </div>
+        <div class="ft-bot">
+          ${F('wf ft-cp','© 2024 Company Name. All rights reserved.')}
+          ${F('wf ft-pl','Privacy')}${F('wf ft-pl','Terms')}
+        </div>
+      </div>`;
+
+    default: return `<div style="padding:20px;text-align:center;color:#999">${type}</div>`;
+  }
+}
+
+/* ═══ COLUMN TEMPLATE (with resize handles + drop zones) ══ */
+function colsTPL(id, n) {
+  const cols = [];
+  for (let i=0; i<n; i++) {
+    if (i > 0) cols.push(`<div class="rh" title="Drag to resize columns"></div>`);
+    cols.push(`
+      <div class="col-sw" id="csw${id}_${i}">
+        <div class="col-item">
+          <div class="col-dz empty" id="dz${id}_${i}"></div>
+          ${F('wf col-h','Column Heading')}
+          ${F('wf col-t','Body text...')}
+          ${F('wf col-t2','')}
+        </div>
+      </div>`);
+  }
+  return `
+    <div class="wf-cols" id="co${id}">${cols.join('')}</div>
+    <div class="cols-add">${AB('Add Column','addCol(this)')}</div>`;
+}
+
+/* ═══ NESTED COMPONENT TEMPLATES ════════════ */
+function nestedTPL(type) {
+  switch(type) {
+    case 'image': return `
+      <div class="n-img-box"></div>
+      ${F('wf img-cap','Image caption')}`;
+    case 'text': return `
+      <div class="n-text">
+        ${F('wf txt-h','Heading')}
+        <div style="display:flex;flex-direction:column;gap:7px;margin-top:8px">
+          ${[0,1,2].map(()=>F('wf txt-l','Body text...')).join('')}
+        </div>
+      </div>`;
+    case 'buttons': return `
+      <div class="n-btns">
+        ${F('wf txt-h','','')}
+        <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;">
+          <div class="bxs" style="height:34px;padding:0 14px">${F('wf bl-t','Label','Primary')}</div>
+          <div class="bxo" style="height:34px;padding:0 14px">${F('wf bl-t','Label','Secondary')}</div>
+        </div>
+      </div>`;
+    case 'form': return `
+      <div class="n-form">
+        <div class="ff">${F('wf flbl','Label','Name')}<div class="finp">${F('wf fph','Placeholder...')}</div></div>
+        <div class="ff">${F('wf flbl','Label','Email')}<div class="finp">${F('wf fph','Placeholder...')}</div></div>
+        <div class="fsub" style="height:34px;padding:0 14px">${F('wf fsbt','Submit Label','Submit')}</div>
+      </div>`;
+    case 'divider': return `
+      <div class="n-div" style="padding:12px">
+        <div class="div-l"></div>
+        ${F('wf div-t','Label')}
+        <div class="div-l"></div>
+      </div>`;
+    case 'section-heading': return `
+      <div class="n-sh">
+        ${F('wf sh-main','Section Heading')}
+        ${F('wf sh-sub','Subheading text')}
+        <div class="sh-line"></div>
+      </div>`;
+    case 'cta': return `
+      <div class="n-cta" style="padding:18px 12px">
+        ${F('wf cta-h','CTA Headline')}
+        ${F('wf cta-sub','Supporting copy')}
+        <div class="cta-bbox" style="margin-top:6px">${F('wf cta-bt','Label','Get Started')}</div>
+      </div>`;
+    default: return `<div style="padding:10px;font-size:11px;color:#999">${type}</div>`;
+  }
+}
+
+/* ═══ BUILD ELEMENT ══════════════════════════ */
+function buildEl(type) {
+  const el = document.createElement('div');
+  el.className='we'; el.dataset.type=type; el.dataset.id=++EC; el.draggable=true;
+  el.innerHTML = `
+    <div class="slb">
+      <span class="slt">${type.replace(/-/g,' ').toUpperCase()}</span>
+      <div class="slf" contenteditable="true" spellcheck="false" data-ph="Click to add section label..."></div>
+    </div>
+    <div class="ec">
+      <button class="ecb" onclick="mvUp(this.closest('.we'))" title="Move up">▲</button>
+      <button class="ecb" onclick="mvDn(this.closest('.we'))" title="Move down">▼</button>
+      <button class="ecb dl" onclick="delEl(this.closest('.we'))" title="Delete">✕</button>
+    </div>
+    ${TPL(type, EC)}`;
+
+  el.addEventListener('click', e=>{
+    if(e.target.closest('.ec')||e.target.closest('.sd')||e.target.closest('.ab')||e.target.closest('.rh')) return;
+    selEl(el);
+  });
+  el.addEventListener('dragstart', cdStart);
+  el.addEventListener('dragend', cdEnd);
+  el.addEventListener('dragover', cdOver);
+  el.addEventListener('dragleave', cdLeave);
+  el.addEventListener('drop', cdDrop);
+
+  hookFields(el);
+
+  /* init resize handles and drop zones after DOM is ready */
+  setTimeout(() => {
+    el.querySelectorAll('.rh').forEach(rh => initResize(rh));
+    el.querySelectorAll('.col-dz').forEach(dz => initDropZone(dz));
+  }, 0);
+
+  return el;
+}
+
+function hookFields(el) {
+  el.querySelectorAll('[contenteditable]').forEach(f => {
+    f.addEventListener('focus', () => { el.draggable=false; if(SEL!==el) selEl(el); });
+    f.addEventListener('blur', () => setTimeout(()=>{ el.draggable=true; }, 80));
+    f.addEventListener('keydown', e => e.stopPropagation());
+  });
+}
+
+/* ═══ RESIZE HANDLES ════════════════════════ */
+function initResize(rh) {
+  rh.addEventListener('mousedown', e => {
+    e.preventDefault(); e.stopPropagation();
+    const leftSW  = rh.previousElementSibling;
+    const rightSW = rh.nextElementSibling;
+    if (!leftSW || !rightSW) return;
+
+    rh.classList.add('active');
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+
+    const startX  = e.clientX;
+    const leftW0  = leftSW.getBoundingClientRect().width;
+    const rightW0 = rightSW.getBoundingClientRect().width;
+    const MIN     = 80;
+
+    const onMove = e => {
+      const dx = e.clientX - startX;
+      const nl = Math.max(MIN, leftW0 + dx);
+      const nr = Math.max(MIN, rightW0 - dx);
+      leftSW.style.flex  = `0 0 ${nl}px`;
+      rightSW.style.flex = `0 0 ${nr}px`;
+    };
+    const onUp = () => {
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+      rh.classList.remove('active');
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  });
+}
+
+/* ═══ COLUMN DROP ZONES ═════════════════════ */
+function initDropZone(dz) {
+  dz.addEventListener('dragenter', e => { e.preventDefault(); e.stopPropagation(); });
+  dz.addEventListener('dragover', e => {
+    e.stopPropagation(); e.preventDefault();
+    if (dz.classList.contains('has-content')) return;
+    if (DFP && NESTABLE.has(DFP)) {
+      dz.classList.add('dz-hover');
+      dz.classList.remove('dz-reject');
+    } else if (DFP) {
+      dz.classList.add('dz-reject');
+      dz.classList.remove('dz-hover');
+    }
+  });
+  dz.addEventListener('dragleave', e => {
+    if (!dz.contains(e.relatedTarget)) {
+      dz.classList.remove('dz-hover','dz-reject');
+    }
+  });
+  dz.addEventListener('drop', e => {
+    e.preventDefault(); e.stopPropagation();
+    dz.classList.remove('dz-hover','dz-reject');
+    if (!DFP || !NESTABLE.has(DFP)) return;
+    if (dz.classList.contains('has-content')) return;
+    renderNested(DFP, dz);
+  });
+}
+
+function renderNested(type, dz) {
+  dz.classList.remove('empty');
+  dz.classList.add('has-content');
+  const outer = document.createElement('div');
+  outer.className = 'nested-outer';
+  outer.innerHTML = nestedTPL(type) + `<button class="nested-clear" onclick="clearDZ(this)" title="Remove">✕</button>`;
+  dz.appendChild(outer);
+  const we = dz.closest('.we');
+  if (we) hookFields(outer);
+}
+
+function clearDZ(btn) {
+  const dz = btn.closest('.col-dz');
+  dz.innerHTML = '';
+  dz.classList.remove('has-content');
+  dz.classList.add('empty');
+}
+
+/* ═══ ADD-SUB FUNCTIONS ══════════════════════ */
+function mkSW(inner, bl=false) {
+  const d = document.createElement('div');
+  d.className = 'sw'+(bl?' bl':'');
+  d.innerHTML = inner + `<button class="sd" onclick="rmSub(this)">✕</button>`;
+  return d;
+}
+function rmSub(btn) { btn.closest('.sw').remove(); }
+
+function addNL(btn) {
+  const row = btn.closest('[id^="nl"]');
+  const sw = mkSW(`<div class="nlw">${F('wf nav-link','Nav Link','New Link')}</div>`);
+  row.insertBefore(sw, btn); hookFields(sw);
+}
+function addHB(btn, s) {
+  const row = btn.closest('[id^="hb"]');
+  const sw = mkSW(`<div class="hbb${s==='o'?' ol':''}">${F('wf hbt','Button Text','Button')}</div>`);
+  row.insertBefore(sw, btn); hookFields(sw);
+}
+function addCol(btn) {
+  const colsDiv = btn.closest('.we').querySelector('[id^="co"]'); if(!colsDiv) return;
+  const id = btn.closest('.we').dataset.id;
+  const idx = colsDiv.querySelectorAll('.col-sw').length;
+  // add resize handle first
+  const rh = document.createElement('div');
+  rh.className='rh'; rh.title='Drag to resize columns';
+  colsDiv.appendChild(rh);
+  initResize(rh);
+  // add column
+  const colSW = document.createElement('div');
+  colSW.className='col-sw'; colSW.id=`csw${id}_${idx}`;
+  const dzId = `dz${id}_${idx}`;
+  colSW.innerHTML = `<div class="col-item"><div class="col-dz empty" id="${dzId}"></div>${F('wf col-h','Column Heading')}${F('wf col-t','Body text...')}</div>`;
+  colsDiv.appendChild(colSW);
+  initDropZone(colSW.querySelector('.col-dz'));
+  hookFields(colSW);
+}
+function addCard(btn) {
+  const c=btn.closest('.we').querySelector('[id^="ca"]'); if(!c) return;
+  const sw=mkSW(`<div class="card-item"><div class="card-img"></div>${F('wf card-h','Card Title')}${F('wf card-t','Description')}<div class="card-bbox">${F('wf card-bt','Button')}</div></div>`,true);
+  c.appendChild(sw); hookFields(sw);
+}
+function addTL(btn) {
+  const c=btn.closest('.we').querySelector('[id^="tl"]'); if(!c) return;
+  const sw=mkSW(F('wf txt-l','Body text...'),true);
+  c.appendChild(sw); hookFields(sw);
+}
+function addBtn(btn, s) {
+  const row=btn.closest('[id^="bt"]')||btn.closest('.wf-btns');
+  const sw=mkSW(`<div class="${s==='o'?'bxo':'bxs'}">${F('wf bl-t','Label','Button')}</div>`);
+  row.insertBefore(sw, btn); hookFields(sw);
+}
+function addFF(btn, tp) {
+  const f=btn.closest('[id^="fm"]')||btn.closest('.wf-form'); if(!f) return;
+  const inner = tp==='ta'
+    ? `<div class="ff">${F('wf flbl','Field Label','New Field')}<div class="fta"></div></div>`
+    : `<div class="ff">${F('wf flbl','Field Label','New Field')}<div class="finp">${F('wf fph','Placeholder...')}</div></div>`;
+  const sub=f.querySelector('.fsub');
+  const sw=mkSW(inner,true); f.insertBefore(sw,sub); hookFields(sw);
+}
+function addTest(btn) {
+  const c=btn.closest('.we').querySelector('[id^="te"]'); if(!c) return;
+  const sw=mkSW(`<div class="test-item"><div class="test-qm"></div><div class="test-txt">${F('wf test-l','Quote text...')}${F('wf test-l','')}</div><div class="test-auth"><div class="test-av"></div><div>${F('wf test-nm','Author Name')}${F('wf test-ti','Title')}</div></div></div>`,true);
+  c.appendChild(sw); hookFields(sw);
+}
+function addFL(btn) {
+  const col=btn.closest('.fc-item'); if(!col) return;
+  const sw=mkSW(F('wf fc-lnk','Link','New Link'),true);
+  col.insertBefore(sw,btn); hookFields(sw);
+}
+function addFC(btn) {
+  const top=btn.closest('[id^="ft"]')||btn.closest('.ft-top'); if(!top) return;
+  const sw=mkSW(`<div class="fc-item">${F('wf fc-h','Column','New Column')}${mkSW(F('wf fc-lnk','Link','Link 1'),true).outerHTML}${AB('Add Link','addFL(this)')}</div>`,true);
+  top.insertBefore(sw,btn); hookFields(sw);
+}
+
+/* ═══ SELECTION ══════════════════════════════ */
+function selEl(el) {
+  document.querySelectorAll('.we.selected').forEach(e=>e.classList.remove('selected'));
+  el.classList.add('selected'); SEL=el; showProps(el);
+}
+function desel() {
+  document.querySelectorAll('.we.selected').forEach(e=>e.classList.remove('selected'));
+  SEL=null;
+  document.getElementById('pe').style.display='block';
+  document.getElementById('pc').style.display='none';
+}
+document.getElementById('cv').addEventListener('click', e=>{
+  if(e.target===document.getElementById('cv')||e.target.closest('.eh')) desel();
+});
+function showProps(el) {
+  const type=el.dataset.type, id=el.dataset.id, m=META[type]||{n:type,t:''};
+  document.getElementById('pe').style.display='none';
+  const pc=document.getElementById('pc'); pc.style.display='block';
+  pc.innerHTML=`
+    <div class="pn">${m.n}</div>
+    <div class="pty">${type}</div>
+    <div class="pr"><div class="pl">Section Label</div><div style="font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;line-height:1.6">Edit in the dark ribbon at the top of the component.</div></div>
+    <div class="pr"><div class="pl">Annotation Notes</div><textarea class="pnta" placeholder="Design notes..." oninput="NOTES['${id}']=this.value">${NOTES[id]||''}</textarea></div>
+    <div class="ph">${m.t}</div>
+    <button class="pdb" onclick="delEl(SEL)">Delete Element</button>`;
+}
+
+/* ═══ ELEMENT MANAGEMENT ═════════════════════ */
+function mvUp(el) { const p=el.previousElementSibling; if(p&&p.classList.contains('we')){ el.parentNode.insertBefore(el,p); upd(); } }
+function mvDn(el) { const n=el.nextElementSibling; if(n&&n.classList.contains('we')){ n.after(el); upd(); } }
+function delEl(el) { if(!el) return; if(SEL===el) desel(); el.remove(); upd(); }
+function clearAll() { if(!confirm('Clear the entire canvas?')) return; document.querySelectorAll('.we').forEach(e=>e.remove()); desel(); upd(); }
+function upd() {
+  const n=document.getElementById('cv').querySelectorAll('.we').length;
+  document.getElementById('ciR').textContent=`${n} element${n!==1?'s':''} · Select → click gray bars to type · Drop into column zones`;
+  document.getElementById('eh').style.display=n===0?'block':'none';
+}
+
+/* ═══ PALETTE DRAG ═══════════════════════════ */
+const ghost=document.getElementById('dgh');
+document.querySelectorAll('.ci').forEach(item=>{
+  item.addEventListener('dragstart', e=>{
+    DFP=item.dataset.type; DFC=null;
+    ghost.textContent='+ '+(META[DFP]?.n||DFP); ghost.style.display='block';
+    e.dataTransfer.effectAllowed='copy';
+    const b=document.createElement('canvas'); e.dataTransfer.setDragImage(b,0,0);
+  });
+  item.addEventListener('dragend', ()=>{ ghost.style.display='none'; DFP=null; });
+});
+document.addEventListener('dragover', e=>{ ghost.style.left=e.clientX+'px'; ghost.style.top=e.clientY+'px'; });
+const CV=document.getElementById('cv');
+CV.addEventListener('dragover', e=>{ e.preventDefault(); if(!DFC) CV.classList.add('drag-over'); });
+CV.addEventListener('dragleave', e=>{ if(!CV.contains(e.relatedTarget)) CV.classList.remove('drag-over'); });
+CV.addEventListener('drop', e=>{
+  e.preventDefault(); CV.classList.remove('drag-over');
+  if(DFP&&!DFC){ const el=buildEl(DFP); CV.appendChild(el); upd(); selEl(el); el.scrollIntoView({behavior:'smooth',block:'nearest'}); }
+});
+
+/* ═══ CANVAS REORDER DRAG ════════════════════ */
+function cdStart(e) {
+  if(e.target!==this) return;
+  DFC=this; DFP=null; this.classList.add('dragging');
+  e.dataTransfer.effectAllowed='move';
+  ghost.textContent='↕ '+(META[this.dataset.type]?.n||this.dataset.type); ghost.style.display='block';
+  const b=document.createElement('canvas'); e.dataTransfer.setDragImage(b,0,0);
+}
+function cdEnd() {
+  this.classList.remove('dragging'); ghost.style.display='none';
+  document.querySelectorAll('.dab,.dbl').forEach(e=>e.classList.remove('dab','dbl'));
+  DFC=null;
+}
+function cdOver(e) {
+  if(!DFC||DFC===this) return; e.preventDefault(); e.stopPropagation();
+  document.querySelectorAll('.dab,.dbl').forEach(e=>e.classList.remove('dab','dbl'));
+  const mid=this.getBoundingClientRect().top+this.getBoundingClientRect().height/2;
+  this.classList.add(e.clientY<mid?'dab':'dbl');
+}
+function cdLeave() { this.classList.remove('dab','dbl'); }
+function cdDrop(e) {
+  if(!DFC||DFC===this) return; e.preventDefault(); e.stopPropagation();
+  const mid=this.getBoundingClientRect().top+this.getBoundingClientRect().height/2;
+  e.clientY<mid?this.before(DFC):this.after(DFC);
+  this.classList.remove('dab','dbl'); upd();
+}
+
+/* ═══ DEVICE SWITCHER ════════════════════════ */
+function switchDev(btn) {
+  document.querySelectorAll('.dev-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
+  const d=btn.dataset.dev; CV.className=d;
+  document.getElementById('ciL').textContent={desktop:'Desktop — 960px',tablet:'Tablet — 768px',mobile:'Mobile — 375px'}[d];
+}
+
+/* ═══ EXPORT ═════════════════════════════════ */
+function exportPNG() {
+  if(window.html2canvas){doExport();return;}
+  const s=document.createElement('script');
+  s.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+  s.onload=doExport; s.onerror=()=>alert('Export failed. Try Cmd/Ctrl+Shift+4 to screenshot.');
+  document.head.appendChild(s);
+}
+function doExport() {
+  const btn=document.querySelector('.btn-a'); btn.textContent='Exporting…'; btn.disabled=true;
+  desel();
+  html2canvas(CV,{backgroundColor:'#faf9f6',scale:2,useCORS:true}).then(c=>{
+    const a=document.createElement('a'); a.download='wireframe.png'; a.href=c.toDataURL(); a.click();
+    btn.textContent='Export PNG'; btn.disabled=false;
+  });
+}
+
+/* ═══ KEYBOARD ═══════════════════════════════ */
+document.addEventListener('keydown', e=>{
+  if(document.activeElement.isContentEditable||document.activeElement.tagName==='TEXTAREA') return;
+  if((e.key==='Delete'||e.key==='Backspace')&&SEL) delEl(SEL);
+  if(e.key==='ArrowUp'&&SEL){e.preventDefault();mvUp(SEL);}
+  if(e.key==='ArrowDown'&&SEL){e.preventDefault();mvDn(SEL);}
+  if(e.key==='Escape') desel();
+});
+</script>
+</body>
+</html>
